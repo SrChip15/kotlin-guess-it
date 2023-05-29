@@ -18,6 +18,7 @@ package com.example.android.guesstheword
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.android.guesstheword.screens.game.GameFragment
 
 /**
  * Creates an Activity that hosts all of the fragments in the app
