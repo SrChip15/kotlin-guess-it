@@ -21,6 +21,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -47,8 +48,10 @@ class GameFragment : Fragment() {
             false
         )
 
-        Log.i("GameFragment",
-            "Associated GameFragment with GameViewModel using ViewModelProvider")
+        Log.i(
+            "GameFragment",
+            "Associated GameFragment with GameViewModel using ViewModelProvider"
+        )
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
 
         binding.wordText.text = viewModel.word.value
@@ -67,6 +70,12 @@ class GameFragment : Fragment() {
         binding.skipButton.setOnClickListener {
             viewModel.onSkip()
         }
+
+        viewModel.isGameOver.observe(viewLifecycleOwner) { gameOver ->
+            if (gameOver) {
+                gameFinished()
+                viewModel.eventGameOverComplete()
+            } }
 
         return binding.root
 
