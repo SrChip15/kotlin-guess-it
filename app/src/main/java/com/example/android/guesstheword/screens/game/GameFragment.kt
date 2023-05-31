@@ -38,7 +38,7 @@ class GameFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate view and obtain an instance of the binding class
         binding = DataBindingUtil.inflate(
@@ -54,23 +54,8 @@ class GameFragment : Fragment() {
         )
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
 
-        binding.wordText.text = viewModel.word.value
-        binding.scoreText.text = viewModel.score.value.toString()
-        binding.timerText.text = viewModel.currentTime.value.toString()
-
-        viewModel.word.observe(viewLifecycleOwner) { newWord ->
-            binding.wordText.text = newWord
-        }
-        viewModel.score.observe(viewLifecycleOwner) { newScore ->
-            binding.scoreText.text = newScore.toString()
-        }
-
-        binding.correctButton.setOnClickListener {
-            viewModel.onCorrect()
-        }
-        binding.skipButton.setOnClickListener {
-            viewModel.onSkip()
-        }
+        binding.gameViewModel = viewModel
+        binding.lifecycleOwner = this
 
         viewModel.isGameOver.observe(viewLifecycleOwner) { gameOver ->
             if (gameOver) {
