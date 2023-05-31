@@ -74,6 +74,12 @@ class GameFragment : Fragment() {
             }
         }
 
+        viewModel.isCountDownActive.observe(viewLifecycleOwner) { isCountDownActive ->
+            if (isCountDownActive) {
+                buzz(BuzzType.COUNTDOWN_PANIC.pattern)
+            }
+        }
+
         return binding.root
 
     }

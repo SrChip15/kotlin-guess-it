@@ -54,6 +54,10 @@ class GameViewModel : ViewModel() {
 
     private val timer: CountDownTimer
 
+    private val _countDownActive = MutableLiveData<Boolean>()
+    val isCountDownActive: LiveData<Boolean>
+        get() = _countDownActive
+
     init {
         Log.i("GameViewModel", "GameViewModel created")
         resetList()
@@ -61,15 +65,18 @@ class GameViewModel : ViewModel() {
         _score.value = 0
         _currentTime.value = Long.MAX_VALUE
         _eventCorrectAnswer.value = false
+        _countDownActive.value = false
 
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
             override fun onTick(millisUntilFinished: Long) {
                 _currentTime.value = millisUntilFinished / ONE_SECOND
+                if (_currentTime.value!! < 10L) _countDownActive.value = true
             }
 
             override fun onFinish() {
                 _currentTime.value = DONE
                 _isGameOver.value = true
+                _countDownActive.value = false
             }
         }
 
