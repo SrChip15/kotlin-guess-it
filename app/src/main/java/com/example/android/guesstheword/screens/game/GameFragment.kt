@@ -32,6 +32,9 @@ import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.GameFragmentBinding
 import com.example.android.guesstheword.screens.game.GameViewModel.BuzzType
 
+/**
+ * Fragment where the game is played, owns the game_fragment view
+ */
 class GameFragment : Fragment() {
 
     private lateinit var viewModel: GameViewModel
@@ -51,11 +54,18 @@ class GameFragment : Fragment() {
             false
         )
 
+        // Get the ViewModel
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
 
+        // Set the ViewModel for data binding - this allows the bound layout access to all of the
+        // data in the ViewModel
         binding.gameViewModel = viewModel
+
+        // Specify the current activity as the lifecycle owner of the binding. This is used so that
+        // the binding can observe LiveData updates
         binding.lifecycleOwner = this
 
+        // Sets up event listening to navigate the player when the game is finished
         viewModel.isGameOver.observe(viewLifecycleOwner) { gameOver ->
             if (gameOver) {
                 val currentScore = viewModel.score.value ?: 0
@@ -64,6 +74,7 @@ class GameFragment : Fragment() {
                 viewModel.eventGameOverComplete()
             } }
 
+        // Buzzes when triggered with different buzz events
         viewModel.eventBuzz.observe(viewLifecycleOwner) { buzzType ->
             if (buzzType != BuzzType.NO_BUZZ) {
                 buzz(buzzType.pattern)
@@ -75,13 +86,18 @@ class GameFragment : Fragment() {
 
     }
 
+    /**
+     * Given a pattern, this method makes sure the device buzzes
+     */
     private fun buzz(pattern: LongArray) {
         val buzzer = activity?.getSystemService<Vibrator>()
 
         buzzer?.let {
+            // Vibrate for 500 milliseconds
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 buzzer.vibrate(VibrationEffect.createWaveform(pattern, -1))
             } else {
+                // deprecated in API 26
                 @Suppress("DEPRECATION")
                 buzzer.vibrate(pattern, -1)
             }
