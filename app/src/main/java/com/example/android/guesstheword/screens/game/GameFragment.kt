@@ -68,15 +68,10 @@ class GameFragment : Fragment() {
                 viewModel.eventGameOverComplete()
             } }
 
-        viewModel.eventCorrectAnswer.observe(viewLifecycleOwner) { isCorrectAnswer ->
-            if (isCorrectAnswer) {
-                buzz(BuzzType.CORRECT.pattern)
-            }
-        }
-
-        viewModel.isCountDownActive.observe(viewLifecycleOwner) { isCountDownActive ->
-            if (isCountDownActive) {
-                buzz(BuzzType.COUNTDOWN_PANIC.pattern)
+        viewModel.eventBuzz.observe(viewLifecycleOwner) { buzzType ->
+            if (buzzType != BuzzType.NO_BUZZ) {
+                buzz(buzzType.pattern)
+                viewModel.onBuzzComplete()
             }
         }
 

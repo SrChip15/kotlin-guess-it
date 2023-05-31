@@ -46,17 +46,13 @@ class GameViewModel : ViewModel() {
         DateUtils.formatElapsedTime(time)
     }
 
-    private val _eventCorrectAnswer = MutableLiveData<Boolean>()
-    val eventCorrectAnswer: LiveData<Boolean>
-        get() = _eventCorrectAnswer
+    private val _eventBuzz = MutableLiveData<BuzzType>()
+    val eventBuzz: LiveData<BuzzType>
+        get() = _eventBuzz
 
     private lateinit var wordList: MutableList<String>
 
     private val timer: CountDownTimer
-
-    private val _countDownActive = MutableLiveData<Boolean>()
-    val isCountDownActive: LiveData<Boolean>
-        get() = _countDownActive
 
     init {
         Log.i("GameViewModel", "GameViewModel created")
@@ -64,23 +60,29 @@ class GameViewModel : ViewModel() {
         nextWord()
         _score.value = 0
         _currentTime.value = Long.MAX_VALUE
-        _eventCorrectAnswer.value = false
-        _countDownActive.value = false
 
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
             override fun onTick(millisUntilFinished: Long) {
                 _currentTime.value = millisUntilFinished / ONE_SECOND
-                if ((millisUntilFinished / ONE_SECOND) < 10L) _countDownActive.value = true
+                if ((millisUntilFinished / ONE_SECOND) < 10L) _eventBuzz.value = BuzzType.COUNTDOWN_PANIC
             }
 
             override fun onFinish() {
                 _currentTime.value = DONE
                 _isGameOver.value = true
-                _countDownActive.value = false
+                _eventBuzz.value = BuzzType.GAME_OVER
             }
         }
 
         timer.start()
+    }
+
+    fun onBuzzComplete() {
+        _eventBuzz.value = BuzzType.NO_BUZZ
+    }
+
+    fun eventGameOverComplete() {
+        _isGameOver.value = false
     }
 
     private fun resetList() {
@@ -111,15 +113,10 @@ class GameViewModel : ViewModel() {
     }
 
     private fun nextWord() {
-        _eventCorrectAnswer.value = false
         if (wordList.isEmpty()) {
             resetList()
         }
         _word.value = wordList.removeAt(0)
-    }
-
-    fun eventGameOverComplete() {
-        _isGameOver.value = false
     }
 
     fun onSkip() {
@@ -129,7 +126,7 @@ class GameViewModel : ViewModel() {
 
     fun onCorrect() {
         _score.value = score.value?.plus(1)
-        _eventCorrectAnswer.value = true
+        _eventBuzz.value = BuzzType.CORRECT
         nextWord()
     }
 
