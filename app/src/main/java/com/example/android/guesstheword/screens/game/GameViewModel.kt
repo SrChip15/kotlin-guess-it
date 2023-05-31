@@ -70,7 +70,7 @@ class GameViewModel : ViewModel() {
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
             override fun onTick(millisUntilFinished: Long) {
                 _currentTime.value = millisUntilFinished / ONE_SECOND
-                if (_currentTime.value!! < 10L) _countDownActive.value = true
+                if ((millisUntilFinished / ONE_SECOND) < 10L) _countDownActive.value = true
             }
 
             override fun onFinish() {
