@@ -8,12 +8,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
+private val CORRECT_BUZZ_PATTERN = longArrayOf(100, 100, 100, 100, 100, 100)
+private val PANIC_BUZZ_PATTERN = longArrayOf(0, 200)
+private val GAME_OVER_BUZZ_PATTERN = longArrayOf(0, 2000)
+private val NO_BUZZ_PATTERN = longArrayOf(0)
+
 class GameViewModel : ViewModel() {
 
     companion object {
         private const val DONE = 0L
         private const val ONE_SECOND = 1_000L
         private const val COUNTDOWN_TIME = 20_000L
+    }
+
+    enum class BuzzType(val pattern: LongArray) {
+        CORRECT(CORRECT_BUZZ_PATTERN),
+        GAME_OVER(GAME_OVER_BUZZ_PATTERN),
+        COUNTDOWN_PANIC(PANIC_BUZZ_PATTERN),
+        NO_BUZZ(NO_BUZZ_PATTERN)
     }
 
     private val _word = MutableLiveData<String>()
@@ -34,6 +46,10 @@ class GameViewModel : ViewModel() {
         DateUtils.formatElapsedTime(time)
     }
 
+    private val _eventCorrectAnswer = MutableLiveData<Boolean>()
+    val eventCorrectAnswer: LiveData<Boolean>
+        get() = _eventCorrectAnswer
+
     private lateinit var wordList: MutableList<String>
 
     private val timer: CountDownTimer
@@ -44,6 +60,7 @@ class GameViewModel : ViewModel() {
         nextWord()
         _score.value = 0
         _currentTime.value = Long.MAX_VALUE
+        _eventCorrectAnswer.value = false
 
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
             override fun onTick(millisUntilFinished: Long) {
@@ -87,6 +104,7 @@ class GameViewModel : ViewModel() {
     }
 
     private fun nextWord() {
+        _eventCorrectAnswer.value = false
         if (wordList.isEmpty()) {
             resetList()
         }
@@ -104,6 +122,7 @@ class GameViewModel : ViewModel() {
 
     fun onCorrect() {
         _score.value = score.value?.plus(1)
+        _eventCorrectAnswer.value = true
         nextWord()
     }
 
