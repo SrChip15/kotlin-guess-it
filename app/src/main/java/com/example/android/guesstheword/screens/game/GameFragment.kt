@@ -20,7 +20,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,10 +51,6 @@ class GameFragment : Fragment() {
             false
         )
 
-        Log.i(
-            "GameFragment",
-            "Associated GameFragment with GameViewModel using ViewModelProvider"
-        )
         viewModel = ViewModelProvider(this)[GameViewModel::class.java]
 
         binding.gameViewModel = viewModel
@@ -63,8 +58,9 @@ class GameFragment : Fragment() {
 
         viewModel.isGameOver.observe(viewLifecycleOwner) { gameOver ->
             if (gameOver) {
-                gameFinished()
-                buzz(BuzzType.GAME_OVER.pattern)
+                val currentScore = viewModel.score.value ?: 0
+                val action = GameFragmentDirections.actionGameToScore(currentScore)
+                findNavController().navigate(action)
                 viewModel.eventGameOverComplete()
             } }
 
@@ -77,12 +73,6 @@ class GameFragment : Fragment() {
 
         return binding.root
 
-    }
-
-    private fun gameFinished() {
-        val action = GameFragmentDirections.actionGameToScore(viewModel.score.value ?: 0)
-        action.score = viewModel.score.value ?: 0
-        findNavController().navigate(action)
     }
 
     private fun buzz(pattern: LongArray) {
