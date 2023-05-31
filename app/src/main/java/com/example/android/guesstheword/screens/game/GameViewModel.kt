@@ -29,8 +29,6 @@ class GameViewModel : ViewModel() {
         get() = _isGameOver
 
     private val _currentTime = MutableLiveData<Long>()
-    val currentTime: LiveData<Long>
-        get() = _currentTime
 
     val currentTimeString = Transformations.map(_currentTime) { time ->
         DateUtils.formatElapsedTime(time)
