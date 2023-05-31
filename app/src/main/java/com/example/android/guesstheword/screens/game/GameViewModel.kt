@@ -11,7 +11,7 @@ class GameViewModel : ViewModel() {
     companion object {
         private const val DONE = 0L
         private const val ONE_SECOND = 1_000L
-        private const val COUNTDOWN_TIME = 10_000L
+        private const val COUNTDOWN_TIME = 20_000L
     }
 
     private val _word = MutableLiveData<String>()
